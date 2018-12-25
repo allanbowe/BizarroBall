@@ -2,7 +2,7 @@
 
 set -o nounset                              # Treat unset variables as an error
 
-BBFILE="/tmp/myconfig.txt"
+BBFILE="./bizarroball.sas"
 
 cat > $BBFILE <<'EOL'
 /* Create data source (change root to a permanent location) */
