@@ -1,0 +1,2 @@
+# set line endings in .sas files to CRLF so they can be opened in windows notepad
+*.sas text eol=crlf
