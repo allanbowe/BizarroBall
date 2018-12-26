@@ -49,3 +49,6 @@ echo "%generateLineUps(from=&seasonStartDate,to=&seasonEndDate)" >> $BBFILE
 cat "Programs/S0800-GeneratePitchDistribution.sas"  >> $BBFILE
 
 echo "%generatePitchAndPAData(from=&seasonStartDate,to=&seasonEndDate)" >> $BBFILE
+
+# for mac, use brew install unix2dos
+unix2dos $BBFILE
