@@ -1,3 +1,11 @@
+/**
+  @file
+  @brief Creates the distribution for the results of 
+    each pitch (e.g., what percent are balls, called strikes, swinging strikes, 
+    singles, etc.)
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 data bizarro.pitch_distribution;
  input Result $16. AB_Done Is_An_AB Is_An_Out Is_A_Hit Bases Runners_Advance_Factor From To;
  datalines;

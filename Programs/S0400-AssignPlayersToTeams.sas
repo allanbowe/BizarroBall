@@ -1,3 +1,10 @@
+/**
+  @file
+  @brief Uses the SAS hash object to select 50 names for each team as
+      well as assign their role (eg, what position they play) on the team.
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 data positions_dim;
  set bizarro.positions_dim;
  retain DummyKey 1;

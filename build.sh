@@ -5,6 +5,15 @@ set -o nounset                              # Treat unset variables as an error
 BBFILE="./bizarroball.sas"
 
 cat > $BBFILE <<'EOL'
+/**
+  @file
+  @brief Auto-generated file
+  @details The `build.sh` file in the https://github.com/allanbowe/bizarro repo
+    is used to create this file.
+  @author Allan Bowe (derivative of work by Don Henderson and Paul Dorfman)
+  ///@cond INTERNAL
+**/
+
 /* Create data source (change root to a permanent location) */
 %let root = %sysfunc(pathname(work));
 options dlcreatedir;
@@ -49,6 +58,8 @@ echo "%generateLineUps(from=&seasonStartDate,to=&seasonEndDate)" >> $BBFILE
 cat "Programs/S0800-GeneratePitchDistribution.sas"  >> $BBFILE
 
 echo "%generatePitchAndPAData(from=&seasonStartDate,to=&seasonEndDate)" >> $BBFILE
+
+echo "/* ///@endcond */" >> $BBFILE
 
 # for mac, use brew install unix2dos
 unix2dos $BBFILE

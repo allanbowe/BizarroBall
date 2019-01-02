@@ -1,3 +1,9 @@
+/**
+  @file
+  @brief Example of hash of hash
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 data tables;
  informat Table Key $32.;
  input Table Key KeyAsData;

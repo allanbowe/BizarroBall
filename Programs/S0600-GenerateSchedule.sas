@@ -1,3 +1,10 @@
+/**
+  @file
+  @brief Subset the combinations so each team plays twice each data
+    against a randomly selected opponent for each game in a given day.
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 data match_ups;
  set bizarro.match_ups;
  do Group = 1 to 10;

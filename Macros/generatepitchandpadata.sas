@@ -1,3 +1,9 @@
+/**
+  @file
+  @brief Generates the At Bat, Pitch and Runner data used in many of the examples.
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 %macro generatePitchAndPAData
        (from =
        ,to =

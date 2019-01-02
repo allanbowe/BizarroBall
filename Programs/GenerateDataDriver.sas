@@ -1,3 +1,9 @@
+/**
+  @file
+  @brief Driver program which calls the programs in order to generate the data
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 options nomprint nosource2;  /* turn on/off as needed */
 
 %inc "&root/Programs/S0100-GenerateTeams.sas";

@@ -1,3 +1,9 @@
+/**
+  @file
+  @brief Environment Setup (if not using bizarro.sas)
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 %let root = C:\HCS\Projects\HashBook\BizarroBall;
 libname bizarro "&root\Data";
 options insert=(sasautos=("&root\Macros"))

@@ -1,3 +1,11 @@
+/**
+  @file
+  @brief Uses the SAS hash object to create a filtered/subset
+    Cartesian product of all possible matchups within a given league (ie, 
+    each team playing each other team up to a fixed number of times)
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 data _null_;
  if 0 then set bizarro.teams;
  length Away_SK Home_SK 3;

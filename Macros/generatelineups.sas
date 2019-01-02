@@ -1,3 +1,11 @@
+/**
+  @file
+  @brief For each team and for each day, assigns a fixed number of
+      batters and pitchers to each game played that day so that a given player 
+      only plays in one game.
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 %macro generateLineUps
        (from =
        ,to =

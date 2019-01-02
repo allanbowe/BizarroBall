@@ -1,0 +1,38 @@
+ALPHABETICAL_INDEX     = NO
+DISABLE_INDEX          = YES
+ENABLE_PREPROCESSING   = NO
+EXTENSION_MAPPING      = sas=Java 
+EXTRACT_LOCAL_CLASSES  = NO
+FILE_PATTERNS          = *.sas \
+                         *.dox \
+                         *.md
+GENERATE_LATEX         = NO
+GENERATE_TREEVIEW      = YES 
+HIDE_FRIEND_COMPOUNDS  = YES
+HIDE_IN_BODY_DOCS      = YES
+HIDE_SCOPE_NAMES       = YES
+HIDE_UNDOC_CLASSES     = YES
+HIDE_UNDOC_MEMBERS     = YES
+HTML_OUTPUT            = doxy
+HTML_HEADER            = ./doxy/new_header.html
+HTML_FOOTER            = ./doxy/new_footer.html
+HTML_EXTRA_STYLESHEET  = ./doxy/new_stylesheet.css
+HTML_EXTRA_FILES       = ./doxy/favicon.png 
+INHERIT_DOCS           = NO
+INLINE_INFO            = NO
+INPUT                  = .
+LAYOUT_FILE            = ./doxy/DoxygenLayout.xml
+MAX_INITIALIZER_LINES  = 0
+PROJECT_NAME           = Bizarro Ball
+PROJECT_LOGO           = doxy/logo_wide.png
+RECURSIVE              = YES
+REPEAT_BRIEF           = NO
+SHOW_NAMESPACES        = NO
+SHOW_USED_FILES        = NO
+SOURCE_BROWSER         = YES
+SOURCE_TOOLTIPS        = NO
+STRICT_PROTO_MATCHING  = YES
+STRIP_CODE_COMMENTS    = NO
+SUBGROUPING            = NO
+TAB_SIZE               = 2
+VERBATIM_HEADERS       = NO

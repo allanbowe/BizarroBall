@@ -1,3 +1,11 @@
+/**
+  @file
+  @brief Reads in a list of the most common 100 first names and 100 last names 
+   and then uses the SAS hash object to create the 10,000 rows corresponding to 
+   the Cartesian product.
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 data first_names;
  /* SRC: https://www.ssa.gov/oact/babynames/decades/century.html */
  infile datalines;

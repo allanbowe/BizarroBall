@@ -16,6 +16,16 @@ For ease of extraction, the files are built into a single [bizarroball.sas](biza
 
 Simply modify the `root` variable (to a permanent path, if desired), and hit RUN.
 
+This produces the following data:
+* 32 teams (2 leagues, each with 16 teams)
+* 1,600 Players (2 leagues * 16 teams * 50 players)
+* 992 games over 31 days ( 16 morning games and 16 afternoon games for each of 31 days)
+* 27,776 batter x game combinations (each team has 14 batters in each of the 62 games)
+* 17,856 pitcher x game combinations (each team has 9 pitchers, who each pitch one inning, in each of the 62 games)
+* 98,769 plate appearances across all the teams/games. This number can be varied based on the random number seeds used to determine the results of each pitch. Note that this data includes details on what bases a given runner occupies at the completion of each plate appearance.
+* 301,506 pitches for those 98,769 plate appeances.
+* 23,901 runs scored
+
 ## This Is Great!  How Do I Show My Appreciation?
 
 After you have bought the [book](https://www.amazon.com/Management-Solutions-Using-Table-Operations/dp/1629601438), feel free to hit the STAR button at the top of this [repo](https://github.com/allanbowe/BizarroBall) so others can learn about (and benefit from) this contribution

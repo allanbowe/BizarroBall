@@ -1,3 +1,11 @@
+/**
+  @file
+  @brief Reads in a list of available team names and randomly selects 16 team 
+      names for two leagues by leveraging the inherent features of the SAS hash 
+      object.
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 data bizarro.teams;
  /* Select team names from 100 most popular team names.
     Source: http://mascotdb.com/lists.php?id=5

@@ -1,3 +1,12 @@
+/**
+  @file
+  @brief Auto-generated file
+  @details The `build.sh` file in the https://github.com/allanbowe/bizarro repo
+    is used to create this file.
+  @author Allan Bowe (derivative of work by Don Henderson and Paul Dorfman)
+  ///@cond INTERNAL
+**/
+
 /* Create data source (change root to a permanent location) */
 %let root = %sysfunc(pathname(work));
 options dlcreatedir;
@@ -21,6 +30,14 @@ libname bizarro "&root/Data";
 %let seed7 = 101;
 
 /* now include macros & datalines */
+/**
+  @file
+  @brief For each team and for each day, assigns a fixed number of
+      batters and pitchers to each game played that day so that a given player 
+      only plays in one game.
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 %macro generateLineUps
        (from =
        ,to =
@@ -172,6 +189,12 @@ libname bizarro "&root/Data";
     quit;
  %end;
 %mend generateLineUps;
+/**
+  @file
+  @brief Generates the At Bat, Pitch and Runner data used in many of the examples.
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 %macro generatePitchAndPAData
        (from =
        ,to =
@@ -386,6 +409,14 @@ libname bizarro "&root/Data";
 
  %end;
 %mend generatePitchAndPAData;
+/**
+  @file
+  @brief Reads in a list of available team names and randomly selects 16 team 
+      names for two leagues by leveraging the inherent features of the SAS hash 
+      object.
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 data bizarro.teams;
  /* Select team names from 100 most popular team names.
     Source: http://mascotdb.com/lists.php?id=5
@@ -514,6 +545,13 @@ Bulls
 Express
 Stallions
 ;;
+/**
+  @file
+  @brief  Loads data on the distribution of how many players to assign to each 
+    team (e.g., how many infielders, outfielders, starting pitchers, etc)
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 data bizarro.Positions_Dim;
  input Position_Code $2. +1 Position $16. +1 Count 8.;
  datalines;
@@ -524,6 +562,14 @@ IF Infielder        4
 OF Outfielder       3
 UT Utility          2
 ;
+/**
+  @file
+  @brief Reads in a list of the most common 100 first names and 100 last names 
+   and then uses the SAS hash object to create the 10,000 rows corresponding to 
+   the Cartesian product.
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 data first_names;
  /* SRC: https://www.ssa.gov/oact/babynames/decades/century.html */
  infile datalines;
@@ -801,6 +847,13 @@ proc freq data = bizarro.player_candidates;
  tables position_code;
 run;
 title;
+/**
+  @file
+  @brief Uses the SAS hash object to select 50 names for each team as
+      well as assign their role (eg, what position they play) on the team.
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 data positions_dim;
  set bizarro.positions_dim;
  retain DummyKey 1;
@@ -883,6 +936,14 @@ proc freq data = bizarro.players;
  title 'Quick Check of Position Distribution by Team';
  tables team_sk * position_code/norow nocol nopercent;
 run;
+/**
+  @file
+  @brief Uses the SAS hash object to create a filtered/subset
+    Cartesian product of all possible matchups within a given league (ie, 
+    each team playing each other team up to a fixed number of times)
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 data _null_;
  if 0 then set bizarro.teams;
  length Away_SK Home_SK 3;
@@ -936,6 +997,13 @@ proc freq data = check;
  tables Team_SK*Home_Away/norow nocol nopercent;
 run;
 title;
+/**
+  @file
+  @brief Subset the combinations so each team plays twice each data
+    against a randomly selected opponent for each game in a given day.
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 data match_ups;
  set bizarro.match_ups;
  do Group = 1 to 10;
@@ -1030,6 +1098,14 @@ proc freq data=check;
 run;
 title;
 %generateLineUps(from=&seasonStartDate,to=&seasonEndDate)
+/**
+  @file
+  @brief Creates the distribution for the results of 
+    each pitch (e.g., what percent are balls, called strikes, swinging strikes, 
+    singles, etc.)
+  @author Paul M. Dorfman and Don Henderson
+**/
+
 data bizarro.pitch_distribution;
  input Result $16. AB_Done Is_An_AB Is_An_Out Is_A_Hit Bases Runners_Advance_Factor From To;
  datalines;
@@ -1046,3 +1122,4 @@ Swinging Strike  0 . . . . .   89  99
 Triple           1 1 0 1 3 0  100 100
 run;
 %generatePitchAndPAData(from=&seasonStartDate,to=&seasonEndDate)
+/* ///@endcond */
