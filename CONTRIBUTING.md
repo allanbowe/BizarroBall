@@ -1,17 +1,13 @@
 # Contributing
 
-Contributions to the Bizarro Ball project are warmly welcomed!  To avoid any
-misunderstandings, do please first discuss the change you wish to make via issue,
-email, or any other method with the owners of this repository before submitting
-a PR.
+Contributions to the Bizarro Ball project are warmly welcomed!  To avoid any misunderstandings, do please first discuss the change you wish to make via issue, email, or any other method with the [owners](https://github.com/allanbowe/BizarroBall/blob/master/.github/CODEOWNERS) of this repository before submitting a PR.
 
-When adding new `.sas` programs, be sure to also update the build script(s) and 
-regenerate the `bizarroball.sas` file.
+When adding new `.sas` programs, be sure to also update the build script(s) and regenerate the `bizarroball.sas` file.  As well as provide the appropriate headers so that the doxygen [documentation](https://allanbowe.github.io/bizarro.github.io/files.html) can be appropriately generated.
+
 
 ## Code of Conduct
 
-Please note we have a code of conduct, please follow it in all your interactions
-with the project.
+Please note we have a code of conduct, please follow it in all your interactions with the project.
 
 ### Our Pledge
 
