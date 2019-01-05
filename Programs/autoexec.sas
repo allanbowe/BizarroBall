@@ -1,6 +1,9 @@
 /**
   @file
-  @brief Environment Setup (if not using bizarro.sas)
+  @brief Environment Setup 
+  @details This step is only relevant if you are configuring your setup to load the source files from disk (as per the original intention when the project was released).  The idea is that this program will be run first, before all the other programs, so that changes to settings (macro variables) will be applied.
+  This is superceded now by the single bizarroball.sas file, as created in the build.sh script.
+
   @author Paul M. Dorfman and Don Henderson
 **/
 
