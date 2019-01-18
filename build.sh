@@ -8,7 +8,7 @@ cat > $BBFILE <<'EOL'
 /**
   @file
   @brief Auto-generated file
-  @details The `build.sh` file in the https://github.com/allanbowe/bizarro repo
+  @details The `build.sh` file in the https://github.com/allanbowe/bizarroball repo
     is used to create this file.
   @author Allan Bowe (derivative of work by Don Henderson and Paul Dorfman)
   ///@cond INTERNAL
