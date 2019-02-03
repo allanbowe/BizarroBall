@@ -1,5 +1,5 @@
 
-# Bizarro Ball 
+# Bizarro Ball <img align="right" src="logo_wide.png">
 
 ## TLDR;
 
@@ -48,4 +48,4 @@ This produces the following data:
 
 After you have bought the [book](https://www.amazon.com/Management-Solutions-Using-Table-Operations/dp/1629601438), feel free to hit the STAR button at the top of this [repo](https://github.com/allanbowe/BizarroBall) so others can learn about (and benefit from) this contribution
 
-![bizarro logo](logo_wide.png)
+
