@@ -1,3 +1,6 @@
+/* due to github size restrictions, the code below will not work as the XPT 
+  files were too big for the repo.  Run bizarroball.sas instead.
+*/
 /* "importData.sas" from the SAS Press book
       Data Management Solutions Using SAS Hash Table Operations:
       A Business Intelligence Case Study
@@ -15,3 +18,5 @@ run;
 
 proc cimport lib = dw file = "&root/dw.xpt";
 run;
+
+
