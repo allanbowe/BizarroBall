@@ -700,6 +700,7 @@ proc sql;
    Runner_ID num label = "ID of Runner Who Scored"
   );
 quit;
+%esmtag(ch5)
 /* "Chapter 5 GenerateTeams.sas" from the SAS Press book
       Data Management Solutions Using SAS Hash Table Operations:
       A Business Intelligence Case Study
@@ -1433,8 +1434,11 @@ data bizarro.hit_distance;
  8   3 385
  9  10 100
 11 310 390
-run;%generateLineUps(from=&seasonStartDate,nWeeks=&nWeeksSeason)
+run;%esmtag(LineUps)
+%generateLineUps(from=&seasonStartDate,nWeeks=&nWeeksSeason)
+%esmtag(PitchAndPAData)
 %generatePitchAndPAData(from=&seasonStartDate,nWeeks=&nWeeksSeason)
+%esmtag(ch7)
 /* "Chapter 7 Create Star Schema DW.sas" from the SAS Press book
       Data Management Solutions Using SAS Hash Table Operations:
       A Business Intelligence Case Study

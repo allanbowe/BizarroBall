@@ -14,9 +14,13 @@ cat > $BBFILE <<'EOL'
   ///@cond INTERNAL
 **/
 
-/* Create data source (change root to a permanent location, perhaps SASUSER) */
-%let root = %sysfunc(pathname(work)); 
-%*let root = /folders/myfolders/BizarroBall; /* use this for the University Edition */
+%let defaultroot=%sysfunc(pathname(work)); /* change to permanent path, sasuser maybe */
+%*let defaultroot = /folders/myfolders/BizarroBall; /* use this for the University Edition */
+
+/* some conditional logic as root may have been predefined */
+%global root; 
+%let root=%sysfunc(coalescec(&root,&defaultroot));
+
 options dlcreatedir;
 libname bizarro "&root/Data";
 libname DW "&root/DW";
@@ -57,6 +61,8 @@ cat Macros/* >> $BBFILE
 
 cat Programs/Templates/* >> $BBFILE
 
+echo "%esmtag(ch5)" >> $BBFILE
+
 cat "Programs/Chapter 5 GenerateTeams.sas" >> $BBFILE
 
 cat "Programs/Chapter 5 GeneratePositionsDimensionTable.sas" >> $BBFILE
@@ -69,10 +75,13 @@ cat "Programs/Chapter 5 GenerateSchedule.sas" >> $BBFILE
 
 cat "Programs/Chapter 5 GeneratePitchDistribution.sas" >> $BBFILE
 
+echo "%esmtag(LineUps)" >> $BBFILE
+
 echo "%generateLineUps(from=&seasonStartDate,nWeeks=&nWeeksSeason)" >> $BBFILE
+echo "%esmtag(PitchAndPAData)" >> $BBFILE
 
 echo "%generatePitchAndPAData(from=&seasonStartDate,nWeeks=&nWeeksSeason)" >> $BBFILE
-
+echo "%esmtag(ch7)" >> $BBFILE
 cat "Programs/Chapter 7"* >> $BBFILE
 
 echo "/* ///@endcond */" >> $BBFILE
