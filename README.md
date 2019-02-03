@@ -21,7 +21,7 @@ This repository contains the sample data used in the seminal book [Data Manageme
 
 The code itself is documented [here](https://allanbowe.github.io/bizarro.github.io/) and was originally sourced from [here](https://support.sas.com/downloads/package.htm?pid=2247#) and [here](http://www.sascommunity.org/wiki/Beyond_Table_Look-up:_The_Versatile_SAS_Hash_Object).
 
-An article on this data is alse available on [communities](https://communities.sas.com/t5/SAS-Communities-Library/Bizarro-Ball-Make-a-Hash-of-it/ta-p/524757).
+An article on this data is also available on [communities](https://communities.sas.com/t5/SAS-Communities-Library/Bizarro-Ball-Make-a-Hash-of-it/ta-p/524757).
 
 ## Who Is It For?
 Primarily this data is useful (and was prepared specifically) for readers of the aforementioned [book](https://www.amazon.com/Management-Solutions-Using-Table-Operations/dp/1629601438), however the authors have given permission for the data to be used for other purposes as well - such as testing, education, development, and demos.
