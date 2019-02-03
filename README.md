@@ -9,7 +9,7 @@ To get the Bizarro Ball data, simply run the following:
 /* optional, set to a permanent location if desired */
 %let root=%sysfunc(pathname(sasuser)); 
 
-/* just run the below to load into WORK */
+/* just running the below will load the libraries in WORK */
 filename bizarro url
   "https://raw.githubusercontent.com/allanbowe/BizarroBall/master/bizarroball.sas";
 %inc bizarro;
