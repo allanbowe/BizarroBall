@@ -11,6 +11,7 @@ filename bizarro url
 %inc bizarro;
 ```
 Note - this can take 4-5 minutes to run, as there is a lot of data!  It will be saved in your SASUSER library/folder, change this location manually if desired.
+<img align="center" height="70px" src="esm.png">
 
 After the data is loaded you can remap the libraries in future sessions as follows:
 
