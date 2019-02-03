@@ -14,50 +14,66 @@ cat > $BBFILE <<'EOL'
   ///@cond INTERNAL
 **/
 
-/* Create data source (change root to a permanent location) */
-%let root = %sysfunc(pathname(work));
+%let root=%sysfunc(pathname(sasuser)); /* change to another path as desired */
+%*let root = /folders/myfolders/BizarroBall; /* use this for the University Edition */
+
 options dlcreatedir;
 libname bizarro "&root/Data";
+libname DW "&root/DW";
+libname template "&root/Data/Template";
+
+/* SCD End Date - Used in Chapter 7 */
+%let SCD_End_Date = '31DEC9999'd;
+
+/* The following macro variables are only used in the programs/macros
+   to generate the sample Bizarro Ball data.
+*/
 
 /* Parameters for creating the data */
 %let nTeamsPerLeague = 16;
-%let seasonStartDate = 01MAR2017;
-%let seasonEndDate = 31MAR2017;
-%let nPlayersPerTeam = 50;
-%let nBattersPerGame = 14;
-%let springTrainingFactor = 2;
-
+%let seasonStartDate = 20MAR2017;
+%let nWeeksSeason = %eval((&nTeamsPerLeague-1)*2);
+%let nPlayersPerTeam = 25;
+%let nBattersPerGame = 9;
+ 
 /* Random Number Seeds */
-%let seed1 = 54321;
-%let seed2 = 98765;
-%let seed3 = 76543;
-%let seed4 = 11;
-%let seed5 = 9887;
-%let seed6 = 9973;
-%let seed7 = 101;
+%let seed1  = 54321;  /* used in S0100 GenerateTeams.sas */
+%let seed2  = 98765;  /* used in S0300 GeneratePlayerCandidates.sas */
+%let seed3  = 76543;  /* used in S0300 GeneratePlayerCandidates.sas */
+%let seed4  = 11;     /* used in S0500 GenerateSchedule.sas */
+%let seed5  = 9887;   /* used in macro generatelinesups.sas */
+%let seed6  = 9973;   /* used in macro generatepitchandpadata.sas */
+%let seed7  = 101;    /* used in macro generatepitchandpadata.sas */
+%let seed8  = 10663;  /* used in macro generatepitchandpadata.sas */
+%let seed9  = 10753;  /* used in macro generatepitchandpadata.sas */
+%let seed10 = 98999;  /* used in S0300 GeneratePlayerCandidates.sas */
+%let seed11 = 99223;  /* used in S0300 GeneratePlayerCandidates.sas */
+
 
 /* now include macros & datalines */
 EOL
 
 cat Macros/* >> $BBFILE
 
-cat "Programs/S0100-GenerateTeams.sas" >> $BBFILE
+cat Programs/Templates/* >> $BBFILE
 
-cat "Programs/S0200-GeneratePositionsDimensionTable.sas" >> $BBFILE
+cat "Programs/Chapter 5 GenerateTeams.sas" >> $BBFILE
 
-cat "Programs/s0300-GeneratePlayerCandidates.sas" >> $BBFILE
+cat "Programs/Chapter 5 GeneratePositionsDimensionTable.sas" >> $BBFILE
 
-cat "Programs/S0400-AssignPlayersToTeams.sas" >> $BBFILE
+cat "Programs/Chapter 5 GeneratePlayerCandidates.sas" >> $BBFILE
 
-cat "Programs/S0500-GenerateMatchUpCombinations.sas" >> $BBFILE
+cat "Programs/Chapter 5 AssignPlayersToTeams.sas" >> $BBFILE
 
-cat "Programs/S0600-GenerateSchedule.sas" >> $BBFILE
+cat "Programs/Chapter 5 GenerateSchedule.sas" >> $BBFILE
 
-echo "%generateLineUps(from=&seasonStartDate,to=&seasonEndDate)" >> $BBFILE
+cat "Programs/Chapter 5 GeneratePitchDistribution.sas" >> $BBFILE
 
-cat "Programs/S0800-GeneratePitchDistribution.sas"  >> $BBFILE
+echo "%generateLineUps(from=&seasonStartDate,nWeeks=&nWeeksSeason)" >> $BBFILE
 
-echo "%generatePitchAndPAData(from=&seasonStartDate,to=&seasonEndDate)" >> $BBFILE
+echo "%generatePitchAndPAData(from=&seasonStartDate,nWeeks=&nWeeksSeason)" >> $BBFILE
+
+cat "Programs/Chapter 7"* >> $BBFILE
 
 echo "/* ///@endcond */" >> $BBFILE
 

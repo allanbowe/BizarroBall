@@ -1,10 +1,32 @@
-# Bizarro Ball
 
-## What Is It?
+# Bizarro Ball <img align="right" src="logo_wide.png">
+
+## TLDR;
+
+To get the Bizarro Ball data, simply run the following:
+
+```
+filename bizarro url 
+  "https://raw.githubusercontent.com/allanbowe/BizarroBall/master/bizarroball.sas";
+%inc bizarro;
+```
+Note - this can take 4-5 minutes to run, as there is a lot of data!  It will be saved in your SASUSER library/folder, change this location manually if desired.
+
+After the data is loaded you can remap the libraries in future sessions as follows:
+
+```
+filename bizarro url
+  "https://raw.githubusercontent.com/allanbowe/BizarroBall/master/autoexec.sas";
+%inc bizarro;
+```
+
+## Wait - What Is This?
 
 This repository contains the sample data used in the seminal book [Data Management Solutions Using SAS Hash Table Operations: A Business Intelligence Case Study](https://www.amazon.com/Management-Solutions-Using-Table-Operations/dp/1629601438) by [Paul Dorfman](https://www.linkedin.com/in/pauldorfman/) and [Don Henderson](https://www.linkedin.com/in/donaldjhenderson/).  More information on the incredible power of hashing can be found in their SGF2017 paper [Beyond Table Lookup: The Versatile SAS® Hash Object ](https://support.sas.com/resources/papers/proceedings17/0821-2017.pdf).
 
-The code itself is documented [here](https://allanbowe.github.io/bizarro.github.io/)
+The code itself is documented [here](https://allanbowe.github.io/bizarro.github.io/) and was originally sourced from [here](https://support.sas.com/downloads/package.htm?pid=2247#) and [here](http://www.sascommunity.org/wiki/Beyond_Table_Look-up:_The_Versatile_SAS_Hash_Object).
+
+An article on this data is also available on [communities](https://communities.sas.com/t5/SAS-Communities-Library/Bizarro-Ball-Make-a-Hash-of-it/ta-p/524757).
 
 ## Who Is It For?
 Primarily this data is useful (and was prepared specifically) for readers of the aforementioned [book](https://www.amazon.com/Management-Solutions-Using-Table-Operations/dp/1629601438), however the authors have given permission for the data to be used for other purposes as well - such as testing, education, development, and demos.
@@ -30,3 +52,5 @@ This produces the following data:
 ## This Is Great!  How Do I Show My Appreciation?
 
 After you have bought the [book](https://www.amazon.com/Management-Solutions-Using-Table-Operations/dp/1629601438), feel free to hit the STAR button at the top of this [repo](https://github.com/allanbowe/BizarroBall) so others can learn about (and benefit from) this contribution
+
+
