@@ -7,9 +7,13 @@
   ///@cond INTERNAL
 **/
 
-/* Create data source (change root to a permanent location, perhaps SASUSER) */
-%let root = %sysfunc(pathname(work)); 
-%*let root = /folders/myfolders/BizarroBall; /* use this for the University Edition */
+%let defaultroot=%sysfunc(pathname(work)); /* change to permanent path, sasuser maybe */
+%*let defaultroot = /folders/myfolders/BizarroBall; /* use this for the University Edition */
+
+/* some conditional logic as root may have been predefined */
+%global root; 
+%let root=%sysfunc(coalescec(&root,&defaultroot));
+
 options dlcreatedir;
 libname bizarro "&root/Data";
 libname DW "&root/DW";
@@ -700,7 +704,6 @@ proc sql;
    Runner_ID num label = "ID of Runner Who Scored"
   );
 quit;
-%esmtag(ch5)
 /* "Chapter 5 GenerateTeams.sas" from the SAS Press book
       Data Management Solutions Using SAS Hash Table Operations:
       A Business Intelligence Case Study
@@ -1434,11 +1437,8 @@ data bizarro.hit_distance;
  8   3 385
  9  10 100
 11 310 390
-run;%esmtag(LineUps)
-%generateLineUps(from=&seasonStartDate,nWeeks=&nWeeksSeason)
-%esmtag(PitchAndPAData)
+run;%generateLineUps(from=&seasonStartDate,nWeeks=&nWeeksSeason)
 %generatePitchAndPAData(from=&seasonStartDate,nWeeks=&nWeeksSeason)
-%esmtag(ch7)
 /* "Chapter 7 Create Star Schema DW.sas" from the SAS Press book
       Data Management Solutions Using SAS Hash Table Operations:
       A Business Intelligence Case Study
