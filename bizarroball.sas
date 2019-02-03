@@ -7,8 +7,8 @@
   ///@cond INTERNAL
 **/
 
-/* Create data source (change root to a permanent location) */
-%let root = %sysfunc(pathname(sasuser));
+/* Create data source (change root to a permanent location, perhaps SASUSER) */
+%let root = %sysfunc(pathname(work)); 
 %*let root = /folders/myfolders/BizarroBall; /* use this for the University Edition */
 options dlcreatedir;
 libname bizarro "&root/Data";
@@ -1435,4 +1435,647 @@ data bizarro.hit_distance;
 11 310 390
 run;%generateLineUps(from=&seasonStartDate,nWeeks=&nWeeksSeason)
 %generatePitchAndPAData(from=&seasonStartDate,nWeeks=&nWeeksSeason)
+/* "Chapter 7 Create Star Schema DW.sas" from the SAS Press book
+      Data Management Solutions Using SAS Hash Table Operations:
+      A Business Intelligence Case Study
+*/
+
+proc datasets lib = dw nolist;
+ options obs = 0;
+ copy in=bizarro out=dw;
+ select AtBats
+        Pitches
+        Runs
+        Games;
+ copy in=template out=dw;
+ select Players_Positions_Played Players;
+run;
+ options obs = max;
+ copy in=bizarro out=dw;
+ select Leagues
+        Teams;
+quit;
+
+/* The following step added post-publication to address the issue with
+   an earlier rename of League to League_SK.
+*/
+proc sql;
+ alter table dw.teams
+   drop league;
+quit;
+/* "Chapter 7 SCD 0.sas" from the SAS Press book
+      Data Management Solutions Using SAS Hash Table Operations:
+      A Business Intelligence Case Study
+*/
+
+data _null_;
+ if _n_ = 1 then
+ do;  /* define the hash table */
+    dcl hash scd(dataset:
+                 ifc(exist("bizarro.Players_SCD0")
+                    ,"bizarro.Players_SCD0"
+                    ,"template.Players_SCD0"
+                    )
+                ,ordered:"A");
+    scd.defineKey("Player_ID");
+    scd.defineData("Team_SK","Player_ID","First_Name"
+                  ,"Last_Name","Position_Code");
+    scd.defineDone();
+ end; /* define the hash table */
+ set bizarro.AtBats(rename=(Batter_ID=Player_ID))
+     end=lr;
+ RC = scd.add();
+ if lr;
+ scd.output(dataset:"Bizarro.Players_SCD0");
+ stop;
+ set template.Players_SCD0;
+run;
+ 
+data tableLookup;
+ /* sample lookup code */
+ if 0 then set bizarro.Players_SCD0;
+ dcl hash scd(dataset:"bizarro.Players_SCD0");
+ scd.defineKey("Player_ID");
+ scd.defineData("Team_SK","Player_ID","First_Name"
+               ,"Last_Name","Position_Code");
+ scd.defineDone();
+ 
+ /* first a key not yet in the table */
+ call missing(Team_SK,First_Name,Last_Name
+             ,Position_Code);
+ Player_Id = 00001;
+ RC = scd.find();
+ output;
+ 
+ /* now a key already in the table */
+ call missing(Team_SK,First_Name,Last_Name
+             ,Position_Code);
+ Player_Id = 10103;
+ RC = scd.find();
+ output;
+ stop;
+run;/* "Chapter 7 SCD 1.sas" from the SAS Press book
+      Data Management Solutions Using SAS Hash Table Operations:
+      A Business Intelligence Case Study
+*/
+
+data _null_;
+ if _n_ = 1 then
+ do;  /* define the hash table */
+    dcl hash scd(dataset:
+                 ifc(exist("bizarro.Players_SCD1")
+                    ,"bizarro.Players_SCD1"
+                    ,"template.Players_SCD1"
+                    )
+                ,ordered:"A");
+    scd.defineKey("Player_ID");
+    scd.defineData("Team_SK","Player_ID","First_Name"
+                  ,"Last_Name","Position_Code");
+    scd.defineDone();
+ end; /* define the hash table */
+ set bizarro.atbats(rename=(Batter_ID=Player_ID))
+     end=lr;
+ rc = scd.replace();
+ if lr;
+ scd.output(dataset:"Bizarro.Players_SCD1");
+ stop;
+ set template.players_scd1;
+run;
+ 
+data tableLookUp;
+ /* sample lookup code */
+ if 0 then set bizarro.players_SCD1;
+ dcl hash scd(dataset:"bizarro.players_SCD1");
+ scd.defineKey("Player_ID");
+ scd.defineData("Team_SK","Player_ID","First_Name"
+               ,"Last_Name","Position_Code");
+ scd.defineDone();
+ 
+ /* first a key with no data items */
+ call missing(Team_SK,First_Name,Last_Name
+             ,Position_Code);
+ Player_Id = 00001;
+ RC = scd.find();
+ output;
+ /* now a key with a row of data items */
+ call missing(Team_SK,First_Name,Last_Name
+             ,Position_Code);
+ Player_Id = 10103;
+ RC = scd.find();
+ output;
+ stop;
+run;/* "Chapter 7 SCD 2.sas" from the SAS Press book
+      Data Management Solutions Using SAS Hash Table Operations:
+      A Business Intelligence Case Study
+*/
+
+data _null_;
+ if 0 then set template.Players_SCD2;
+ if _n_ = 1 then
+ do;  /* define the hash table */
+    dcl hash scd(dataset:
+                 ifc(exist("bizarro.Players_SCD2")
+                    ,"bizarro.Players_SCD2"
+                    ,"template.Players_SCD2"
+                    )
+                ,ordered:"A",multidata:"Y");
+    scd.defineKey("Player_ID");
+    scd.defineData("Player_ID","Team_SK"
+                  ,"First_Name","Last_Name"
+                  ,"Position_Code","Bats","Throws"
+                  ,"Start_Date","End_Date");
+    scd.defineDone();
+ end;  /* define the hash table */
+ 
+ set bizarro.atbats
+               (rename = (Batter_ID = Player_ID
+                          Team_SK = _Team_SK
+                          First_Name = _First_Name
+                          Last_Name = _Last_Name
+                          Position_Code = _Position_Code
+                          Bats = _Bats
+                          Throws = _Throws)
+                ) end=lr;
+ 
+ 
+ if scd.check() ne 0 then
+ do;  /* need to add the player */
+    scd.add(key: Player_ID
+           ,data: Player_ID
+           ,data: _Team_SK
+           ,data: _First_Name
+           ,data: _Last_Name
+           ,data: _Position_Code
+           ,data: _Bats
+           ,data: _Throws
+           ,data: Date
+           ,data: &SCD_End_Date
+           );
+ end; /* need to add the player */
+ else
+ do;  /* check to see if there are changes */
+ 
+    RC = scd.find();
+    do while(RC = 0);
+       if (Start_Date le Date le End_Date) then leave;
+       RC = scd.find_next();
+    end;
+ 
+    if catx(":", Team_SK, First_Name, Last_Name
+               , Position_Code, Bats, Throws) ne
+       catx(":",_Team_SK,_First_Name,_Last_Name
+               ,_Position_Code,_Bats,_Throws) then
+    do;  /* date out prior record and add new one */;
+       if RC = 0 then scd.replaceDup(data: Player_ID
+                                    ,data: Team_SK
+                                    ,data: First_Name
+                                    ,data: Last_Name
+                                    ,data: Position_Code
+                                    ,data: Bats
+                                    ,data: Throws
+                                    ,data: Start_Date
+                                    ,data: Date-1
+                                    );
+       scd.add(key: Player_ID
+              ,data: Player_ID
+              ,data: _Team_SK
+              ,data: _First_Name
+              ,data: _Last_Name
+              ,data: _Position_Code
+              ,data: _Bats
+              ,data: _Throws
+              ,data: Date
+              ,data: &SCD_End_Date
+              );
+    end; /* date out prior record and add new one */;
+ end;  /* check to see if there are changes */
+ if lr;
+ scd.output(dataset:"bizarro.Players_SCD2");
+ stop;
+run;
+ 
+data tableLookup;
+ /* Sample Lookup */
+ if 0 then set bizarro.Players_SCD2;
+ if _n_ = 1 then
+ do;
+    dcl hash scd(dataset:"bizarro.Players_SCD2"
+                ,multidata:"Y");
+    scd.defineKey("Player_ID");
+    scd.defineData("Team_SK","Player_ID","First_Name"
+                  ,"Last_Name","Position_Code","Bats"
+                  ,"Throws","Start_Date","End_Date");
+    scd.defineDone();
+ end;
+ infile datalines;
+ attrib Date format = yymmdd10. informat = yymmdd10.;
+ input Player_ID Date;
+ RC = scd.find();
+ do while(RC = 0);
+    if (Start_Date le Date le End_Date) then leave;
+    RC = scd.find_next();
+ end;
+ if RC ne 0 then call missing(Team_SK,First_Name
+                             ,Last_Name,Position_Code
+                             ,Bats,Throws
+                             ,Start_Date,End_Date);
+datalines;
+10103 2017/03/23
+10103 2017/07/26
+99999 2017/04/15
+10782 2017/03/22
+10782 2017/03/21
+run;/* "Chapter 7 SCD 3 w Facts.sas" from the SAS Press book
+      Data Management Solutions Using SAS Hash Table Operations:
+      A Business Intelligence Case Study
+*/
+
+data _null_;
+ if 0 then set template.Players_SCD3_Facts;
+ if _n_ = 1 then
+ do;  /* define the hash table */
+    dcl hash scd(dataset:
+           ifc(exist("bizarro.Players_SCD3_Facts")
+              ,"bizarro.Players_SCD3_Facts"
+              ,"template.Players_SCD3_Facts"
+              )
+                ,ordered:"A");
+    scd.defineKey("Player_ID");
+    scd.defineData("Player_ID","Team_SK"
+                  ,"First_Name","Last_Name"
+                  ,"First","Second","Short","Third"
+                  ,"Left","Center","Right","Catcher"
+                  ,"Pitcher","Pinch_Hitter");
+    scd.defineDone();
+    dcl hash uniqueGames();
+    uniqueGames.defineKey("Game_SK"
+                         ,"Player_ID"
+                         ,"Position_Code");
+    uniqueGames.defineDone();
+ end; /* define the hash table */
+ set bizarro.AtBats(rename = (Batter_ID = Player_ID))
+     end=lr;
+ if scd.find() ne 0 then
+    call missing(First,Second,Short,Third
+                ,Left,Center,Right,Catcher
+                ,Pitcher,Pinch_Hitter);
+ select(Position_Code);
+    when("1B") First        + (uniqueGames.add() = 0);
+    when("2B") Second       + (uniqueGames.add() = 0);
+    when("SS") Short        + (uniqueGames.add() = 0);
+    when("3B") Third        + (uniqueGames.add() = 0);
+    when("LF") Left         + (uniqueGames.add() = 0);
+    when("CF") Center       + (uniqueGames.add() = 0);
+    when("RF") Right        + (uniqueGames.add() = 0);
+    when("C" ) Catcher      + (uniqueGames.add() = 0);
+    when("SP") Pitcher      + (uniqueGames.add() = 0);
+    when("RP") Pitcher      + (uniqueGames.add() = 0);
+    when("PH") Pinch_Hitter + (uniqueGames.add() = 0);
+    otherwise;
+ end;
+ scd.replace();
+ if lr;
+ scd.output(dataset:"Bizarro.Players_SCD3_Facts");
+run;/* "Chapter 7 SCD 3.sas" from the SAS Press book
+      Data Management Solutions Using SAS Hash Table Operations:
+      A Business Intelligence Case Study
+*/
+
+data _null_;
+ if 0 then set template.Players_SCD3;
+ if _n_ = 1 then
+ do;  /* define the hash table */
+    dcl hash scd(dataset:
+                 ifc(exist("bizarro.Players_SCD3")
+                    ,"bizarro.Players_SCD3"
+                    ,"template.Players_SCD3"
+                    )
+                ,ordered:"A",multidata:"Y");
+    scd.defineKey("Player_ID");
+    scd.defineData("Player_ID","Debut_Team_SK","Team_SK"
+                  ,"First_Name","Last_Name"
+                  ,"Position_Code","Bats","Throws");
+    scd.defineDone();
+ end; /* define the hash table */
+ set bizarro.atbats(rename=(Batter_ID = Player_ID))
+     end=lr;
+ _Team_SK = Team_SK;
+ if scd.find() then scd.add(Key:Player_ID
+                           ,Data:Player_ID
+                           ,Data:Team_SK
+                           ,Data:Team_SK
+                           ,Data:First_Name
+                           ,Data:Last_Name
+                           ,Data:Position_Code
+                           ,Data:Bats
+                           ,Data:Throws
+                           );
+ else scd.replace(Key:Player_ID
+                 ,Data:Player_ID
+                 ,Data:Debut_Team_SK
+                 ,Data:_Team_SK
+                 ,Data:First_Name
+                 ,Data:Last_Name
+                 ,Data:Position_Code
+                 ,Data:Bats
+                 ,Data:Throws
+                 );
+ if lr;
+ scd.output(dataset:"bizarro.Players_SCD3");
+run;/* "Chapter 7 SCD 6.sas" from the SAS Press book
+      Data Management Solutions Using SAS Hash Table Operations:
+      A Business Intelligence Case Study
+*/
+
+data _null_;
+ if 0 then set template.Players_SCD6;
+ if _n_ = 1 then
+ do;  /* define the hash table */
+    dcl hash scd(dataset:
+                 ifc(exist("bizarro.Players_SCD6")
+                    ,"bizarro.Players_SCD6"
+                    ,"template.Players_SCD6"
+                    )
+                ,ordered:"A",multidata:"Y");
+    scd.defineKey("Player_ID");
+    scd.defineData("Player_ID","Active","SubKey"
+                  ,"Team_SK","First_Name","Last_Name"
+                  ,"Position_Code","Bats","Throws"
+                  ,"Start_Date","End_Date");
+    scd.defineDone();
+ end; /* define the hash table */
+ set bizarro.atbats
+               (rename = (Batter_ID = Player_ID
+                          Team_SK = _Team_SK
+                          First_Name = _First_Name
+                          Last_Name = _Last_Name
+                          Position_Code = _Position_Code
+                          Bats = _Bats
+                          Throws = _Throws)
+               ) end=lr;
+ if scd.check(Key:Player_ID) ne 0 then
+ do;  /* player is new */
+    scd.add(key: Player_ID
+           ,data: Player_ID
+           ,data: 1
+           ,data: 1
+           ,data: _Team_SK
+           ,data: _First_Name
+           ,data: _Last_Name
+           ,data: _Position_Code
+           ,data: _Bats
+           ,data: _Throws
+           ,data: Date
+           ,data: &SCD_End_Date
+           );
+ end; /* player is new */
+ else
+ do;  /* check to see if there are changes */
+ 
+    RC = scd.find();
+    do while(RC = 0);
+       if (Start_Date le Date le End_Date) then leave;
+       RC = scd.find_next();
+    end;
+    if RC ne 0 then
+       call missing(Team_SK,First_Name,Last_Name
+                   ,Position_Code,Bats,Throws);
+ 
+    if catx(":", Team_SK, First_Name, Last_Name
+               , Position_Code, Bats, Throws) ne
+       catx(":",_Team_SK,_First_Name,_Last_Name
+               ,_Position_Code,_Bats,_Throws) then
+    do;  /* date out prior record and add new one */;
+ 
+       if RC = 0 then /* date out active record */
+          scd.replaceDup(data: Player_ID
+                        ,data: 0
+                        ,data: SubKey
+                        ,data: Team_SK
+                        ,data: First_Name
+                        ,data: Last_Name
+                        ,data: Position_Code
+                        ,data: Bats
+                        ,data: Throws
+                        ,data: Start_Date
+                        ,data: Date - 1
+                        );
+ 
+       /* add row with the next autonumber value */
+       _SubKey = 0;
+       RC = scd.find();
+       do while(RC = 0);
+          RC = scd.find_next();
+          _SubKey = max(_SubKey,SubKey);
+       end;
+       scd.add(key: Player_ID
+              ,data: Player_ID
+              ,data: 1
+              ,data: _SubKey + 1
+              ,data: _Team_SK
+              ,data: _First_Name
+              ,data: _Last_Name
+              ,data: _Position_Code
+              ,data: _Bats
+              ,data: _Throws
+              ,data: Date
+              ,data: &SCD_End_Date
+              );
+    end; /* date out prior record and add new one */;
+ end;  /* check to see if there are changes */
+ if lr;
+ scd.output(dataset:"Bizarro.Players_SCD6"
+     || "(index=(SCD6=(Player_ID Active SubKey)))");
+run;
+ 
+data tableLookup;
+ /* Sample Lookup */
+ retain Player_ID;
+ if 0 then set bizarro.Players_SCD6(drop=Subkey);
+ if _n_ = 1 then
+ do;  /* define the hash table */
+    dcl hash scd(dataset:"bizarro.Players_SCD6"
+                ,multidata:"Y",ordered:"D");
+    scd.defineKey("Player_ID","Active");
+    scd.defineData("Team_SK","Player_ID","Active"
+                  ,"First_Name","Last_Name"
+                  ,"Position_Code","Bats","Throws"
+                  ,"Start_Date","End_Date");
+    scd.defineDone();
+ end; /* define the hash table */
+ infile datalines;
+ attrib Date format = yymmdd10. informat = yymmdd10.;
+ input Player_ID Date;
+ RC = scd.find(Key:Player_ID,Key:1);
+ if RC = 0 and (Start_Date le Date le End_Date)
+ then;
+ else
+ do;  /* search the inactive rows */
+    RC = scd.find(Key:Player_ID,Key:0);
+    do while(RC = 0);
+       if (Start_Date le Date le End_Date) then leave;
+       RC = scd.find_next();
+    end;
+ end; /* search the inactive rows */
+ if RC ne 0 then
+            call missing(Team_SK,Active,First_Name
+                        ,Last_Name,Position_Code,Bats
+                        ,Throws,Start_Date,End_Date);
+datalines;
+10103 2017/10/15
+10103 2017/03/23
+99999 2017/03/15
+10782 2017/03/22
+10782 2017/03/21
+run;/* "Chapter 7 Update Star Schema DW.sas" from the SAS Press book
+      Data Management Solutions Using SAS Hash Table Operations:
+      A Business Intelligence Case Study
+*/
+
+data _null_;
+ %createHash(hashTable=AtBats)
+ %createHash(hashTable=Pitches)
+ %createHash(hashTable=Runs)
+ %createHash(hashTable=Games)
+ %createHash(hashTable=Players_Positions_Played)
+ %createHash(hashTable=Players)
+ 
+ dcl hash uniqueGames();
+ uniqueGames.defineKey("Game_SK"
+                      ,"Player_ID"
+                      ,"Position_Code");
+ uniqueGames.defineDone();
+ 
+ lr = 0;
+ do until(lr);
+    set bizarro.AtBats(rename = (Team_SK = _Team_SK
+                                 First_Name = _First_Name
+                                 Last_Name = _Last_Name
+                                 Bats = _Bats
+                                 Throws = _Throws)
+                                ) end=lr;
+    if game_sk ne lag(game_sk) and _AtBats.check() = 0
+       then _AtBats.remove();
+    _AtBats.add();
+    link Games_SCD;
+    Player_ID = Batter_ID;
+    link Positions_Played_SCD;
+    link Players_SCD;
+ end;
+ _AtBats.output(dataset:"dw.AtBats");
+ 
+ lr = 0;
+ do until(lr);
+    set bizarro.Pitches end=lr;
+    if game_sk ne lag(game_sk) and _Pitches.check() = 0
+       then _Pitches.remove();
+    _Pitches.add();
+    Player_ID = Pitcher_ID;
+    _Team_SK = Team_SK;
+    _First_Name = Pitcher_First_Name;
+    _Last_Name = Pitcher_Last_Name;
+    _Bats = Pitcher_Bats;
+    _Throws = Pitcher_Throws;
+    link Players_SCD;
+    Position_Code = Pitcher_Type;
+    link Positions_Played_SCD;
+ end;
+ _Pitches.output(dataset:"dw.Pitches");
+ 
+ lr = 0;
+ do until(lr);
+    set bizarro.Runs end=lr;
+    if game_sk ne lag(game_sk) and _Runs.check() = 0
+       then _Runs.remove();
+    _Runs.add();
+ end;
+ _Runs.output(dataset:"dw.Runs");
+ 
+ /* output the updated dimension tables */
+ _games.output(dataset:"dw.Games");
+ _Players_Positions_Played.output
+                          (dataset:"dw.Players_Positions_Played");
+ _Players.output(dataset:"dw.Players");
+ stop;
+ 
+ Games_SCD:
+  Year = Year(Date);
+  Month = Month(Date);
+  DayOfWeek = weekday(Date);
+  _games.replace();
+ return;
+ 
+ Positions_Played_SCD:
+  if _Players_Positions_Played.find() ne 0
+     then call missing(First,Second,Short,Third,Left
+                      ,Center,Right,Catcher,Pitcher);
+  select(Position_Code);
+     when("1B") First        + (uniqueGames.add() = 0);
+     when("2B") Second       + (uniqueGames.add() = 0);
+     when("SS") Short        + (uniqueGames.add() = 0);
+     when("3B") Third        + (uniqueGames.add() = 0);
+     when("LF") Left         + (uniqueGames.add() = 0);
+     when("CF") Center       + (uniqueGames.add() = 0);
+     when("RF") Right        + (uniqueGames.add() = 0);
+     when("C" ) Catcher      + (uniqueGames.add() = 0);
+     when("SP") Pitcher      + (uniqueGames.add() = 0);
+     when("RP") Pitcher      + (uniqueGames.add() = 0);
+     when("PH") Pinch_Hitter + (uniqueGames.add() = 0);
+     otherwise;
+  end;
+  _Players_Positions_Played.replace();
+ return;
+ 
+ Players_SCD:
+  if _Players.check() ne 0 then
+  do;  /* need to add the player */
+     _Players.add(key: Player_ID
+                 ,data: Player_ID
+                 ,data: _Team_SK
+                 ,data: _First_Name
+                 ,data: _Last_Name
+                 ,data: _Bats
+                 ,data: _Throws
+                 ,data: Date
+                 ,data: &SCD_End_Date
+                 );
+  end; /* need to add the player */
+  else
+  do;  /* check to see if there are changes */
+ 
+     RC = _Players.find();
+     do while(RC = 0);
+        if (Start_Date le Date le End_Date) then leave;
+        RC = _Players.find_next();
+     end;
+ 
+     if catx(":", Team_SK, First_Name, Last_Name
+                , Bats, Throws) ne
+        catx(":",_Team_SK,_First_Name,_Last_Name
+                ,_Bats,_Throws) then
+     do;  /* date out prior record and add new one */
+        if RC = 0 then
+                  _Players.replaceDup(data: Player_ID
+                                     ,data: Team_SK
+                                     ,data: First_Name
+                                     ,data: Last_Name
+                                     ,data: Bats
+                                     ,data: Throws
+                                     ,data: Start_Date
+                                     ,data: Date-1
+                                     );
+        _Players.add(key: Player_ID
+                    ,data: Player_ID
+                    ,data: _Team_SK
+                    ,data: _First_Name
+                    ,data: _Last_Name
+                    ,data: _Bats
+                    ,data: _Throws
+                    ,data: Date
+                    ,data: &SCD_End_Date
+                    );
+     end; /* date out prior record and add new one */;
+  end;  /* check to see if there are changes */
+ return;
+run;
 /* ///@endcond */

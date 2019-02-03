@@ -73,6 +73,8 @@ echo "%generateLineUps(from=&seasonStartDate,nWeeks=&nWeeksSeason)" >> $BBFILE
 
 echo "%generatePitchAndPAData(from=&seasonStartDate,nWeeks=&nWeeksSeason)" >> $BBFILE
 
+cat "Programs/Chapter 7"* >> $BBFILE
+
 echo "/* ///@endcond */" >> $BBFILE
 
 # for mac, use brew install unix2dos
