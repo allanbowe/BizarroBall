@@ -12,7 +12,7 @@ filename bizarro url
 ```
 Note - this can take 4-5 minutes to run, as there is a lot of data!  It will be saved in your SASUSER library/folder, change this location manually if desired.
 
-<img align="middle" height="120px" src="esm.png">
+<img align="middle" height="150px" src="esm.png">
 
 After the data is loaded you can remap the libraries in future sessions as follows:
 
