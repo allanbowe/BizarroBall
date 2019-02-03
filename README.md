@@ -6,12 +6,17 @@
 To get the Bizarro Ball data, simply run the following:
 
 ```
-/* optional, set to a permanent location if desired */
-%let root=%sysfunc(pathname(sasuser)); 
-
-/* just running the below will load the libraries in WORK */
-filename bizarro url
+filename bizarro url 
   "https://raw.githubusercontent.com/allanbowe/BizarroBall/master/bizarroball.sas";
+%inc bizarro;
+```
+Note - this can take 4-5 minutes to run, as there is a lot of data!  It will be saved in your SASUSER library/folder, change this location manually if desired.
+
+After the data is loaded you can remap the libraries in future sessions as follows:
+
+```
+filename bizarro url
+  "https://raw.githubusercontent.com/allanbowe/BizarroBall/master/autoexec.sas";
 %inc bizarro;
 ```
 

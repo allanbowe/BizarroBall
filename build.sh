@@ -14,12 +14,8 @@ cat > $BBFILE <<'EOL'
   ///@cond INTERNAL
 **/
 
-%let defaultroot=%sysfunc(pathname(work)); /* change to permanent path, sasuser maybe */
-%*let defaultroot = /folders/myfolders/BizarroBall; /* use this for the University Edition */
-
-/* some conditional logic as root may have been predefined */
-%global root; 
-%let root=%sysfunc(coalescec(&root,&defaultroot));
+%let root=%sysfunc(pathname(sasuser)); /* change to another path as desired */
+%*let root = /folders/myfolders/BizarroBall; /* use this for the University Edition */
 
 options dlcreatedir;
 libname bizarro "&root/Data";
